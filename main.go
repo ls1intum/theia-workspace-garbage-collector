@@ -1,4 +1,4 @@
-package theia_workspace_garbage_collector
+package main
 
 import (
 	"context"
