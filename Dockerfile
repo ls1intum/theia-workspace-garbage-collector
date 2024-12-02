@@ -12,4 +12,6 @@ COPY *.go ./
 
 RUN go build -o /garbage-collector
 
+RUN chmod +x /garbage-collector
+
 ENTRYPOINT ["/garbage-collector"]
