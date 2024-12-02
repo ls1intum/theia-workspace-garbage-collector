@@ -6,7 +6,9 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
+	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"theia-workspace-garbage-collector/api/types/v1beta5"
 	clientV1Beta5 "theia-workspace-garbage-collector/clientset/v1beta5"
@@ -18,16 +20,22 @@ Adapted from https://www.martin-helmich.de/en/blog/kubernetes-crd-client.html
  @ https://github.com/martin-helmich/kubernetes-crd-example/tree/master
 */
 
-const (
-	namespace     = "theia-prod"
-	maxDuration   = 15 * time.Minute
-	checkInterval = 1 * time.Minute
-)
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
+}
 
 func main() {
-
 	var config *rest.Config
 	var err error
+
+	namespace := getEnv("K8S_NAMESPACE", "theia-prod")
+	checkInterval, err := time.ParseDuration(getEnv("CHECK_INTERVAL", strconv.FormatInt(int64(30*time.Minute), 10)))
+	if err != nil {
+		panic(err.Error())
+	}
 
 	config, err = rest.InClusterConfig()
 	if err != nil {
@@ -59,13 +67,18 @@ func main() {
 			} else {
 				fmt.Println("Garbage collection completed successfully")
 			}
-			fmt.Printf("Will check again in %s\n\n", time.Now().Add(checkInterval).Format(time.TimeOnly))
+			fmt.Printf("Will check again at %s\n\n", time.Now().Add(checkInterval).Format(time.DateTime))
 			time.Sleep(checkInterval)
 		}
 	}
 }
 
 func garbageCollectWorkspaces(clientSet *clientV1Beta5.V1Beta5Client, namespace string) error {
+	maxDuration, err := time.ParseDuration(getEnv("WORKSPACE_TTL", strconv.FormatInt(int64(14*24*time.Hour), 10)))
+	if err != nil {
+		return err
+	}
+
 	workspaces, err := clientSet.Workspaces(namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err

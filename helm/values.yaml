@@ -6,3 +6,8 @@ image:
 
 serviceAccount:
   name: garbage-collector-sa
+
+env:
+  K8S_NAMESPACE: "theia-prod"
+  WORKSPACE_TTL: "1209600000000000"
+  CHECK_INTERVAL: "1800000000000"
