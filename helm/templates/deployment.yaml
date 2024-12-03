@@ -21,8 +21,8 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: K8S_NAMESPACE
-              value: {{ .Values.env.K8S_NAMESPACE | quote }}
+              value: {{ .Release.Namespace | quote }}
             - name: WORKSPACE_TTL
-              value: {{ .Values.env.WORKSPACE_TTL | quote}}
+              value: {{ .Values.env.WORKSPACE_TTL | quote }}
             - name: CHECK_INTERVAL
               value: {{ .Values.env.CHECK_INTERVAL | quote }}

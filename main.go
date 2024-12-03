@@ -53,6 +53,12 @@ func main() {
 	defer stop()
 
 	fmt.Println("Starting garbage collector...")
+
+	// Print configuration
+	fmt.Printf("- Namespace: %s\n", namespace)
+	fmt.Printf("- Check interval: %s\n", checkInterval)
+	fmt.Printf("- Workspace TTL: %s\n", getEnv("WORKSPACE_TTL", strconv.FormatInt(int64(14*24*time.Hour), 10)))
+
 	// Run garbage collection loop
 	for {
 		select {
