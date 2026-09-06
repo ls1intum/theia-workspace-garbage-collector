@@ -1,4 +1,4 @@
-FROM golang:1.23.3
+FROM golang:1.27.0
 LABEL authors="iyannsch"
 
 WORKDIR /app
